@@ -2,10 +2,13 @@ import numpy as np
 import pytest
 from sklearn.metrics import f1_score, accuracy_score
 
+# import our classification class
 import emoji
+# import our scorer_semeval18 code
+import scorer_semeval18
 
 @pytest.fixture(autouse=True)
-def test_read_smsspam():
+def test_read_tweet():
     assert 0 == 0
 
 def test_features():
