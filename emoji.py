@@ -109,3 +109,29 @@ class TextToLabels:
         :return: A vector, with one entry for each label.
         """
         return self.lbEncoder.transform(labels)
+
+class Classifier:
+    def __init__(self):
+        """Initalizes a logistic regression classifier.
+        """
+        self.clfLR = LogisticRegression(random_state=0)
+
+    def train(self, features: NDArray, labels: NDArray) -> None:
+        """Trains the classifier using the given training examples.
+        :param features: A feature matrix, where each row represents a text.
+        Such matrices will typically be generated via TextToFeatures.
+        :param labels: A label vector, where each entry represents a label.
+        Such vectors will typically be generated via TextToLabels.
+        """
+        # fit (train) the clfLR based on the feature matrix and the labels for each docs
+        # in such training dataset
+        self.clfLR.fit(features, labels) 
+
+
+    def predict(self, features: NDArray) -> NDArray:
+        """Makes predictions for each of the given examples.
+        :param features: A feature matrix, where each row represents a text.
+        Such matrices will typically be generated via TextToFeatures.
+        :return: A prediction vector, where each entry represents a label.
+        """
+        return self.clfLR.predict(features)
