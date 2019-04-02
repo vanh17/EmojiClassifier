@@ -23,7 +23,7 @@ def test_prediction(capsys, min_f1=0.5):
  #        emoji_code_gold = int(truth_file_lines[i].replace("\n",""))
  #        gold_keys[i] = emoji_code_gold
     # get texts and labels from the training data
-    train_examples = emoji.read_tweet("dataset/us_train.text", "dataset/us_train.labels")
+    train_examples = emoji.read_tweet("dataset/us_train.text", "dataset/us_train.labels", solver='lbfgs')
     train_labels, train_texts = zip(*train_examples)
 
     # get texts and labels from the development data 
