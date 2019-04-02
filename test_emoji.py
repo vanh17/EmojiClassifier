@@ -29,15 +29,15 @@ def test_prediction(capsys, min_f1=0.5):
     # get texts and labels from the development data 
     # The organizer provide the test set for development process
     # to evaluate the whole system we need to submit the output_label_text file to their website
-    devel_examples = classify.read_tweet("dataset/us_test.text", "dataset/us_test.labels")
+    devel_examples = emoji.read_tweet("dataset/us_test.text", "dataset/us_test.labels")
     devel_labels, devel_texts = zip(*devel_examples)
 
     # create the feature extractor and label encoder
-    to_features = classify.TextToFeatures(train_texts)
-    to_labels = classify.TextToLabels(train_labels)
+    to_features = emoji.TextToFeatures(train_texts)
+    to_labels = emoji.TextToLabels(train_labels)
 
     # train the classifier on the training data
-    classifier = classify.Classifier()
+    classifier = emoji.Classifier()
     classifier.train(to_features(train_texts), to_labels(train_labels))
 
     # make predictions on the development data
