@@ -9,8 +9,8 @@ from scipy.sparse import spmatrix
 NDArray = Union[np.ndarray, spmatrix]
 
 def read_tweet(tweet_path: str, emoji_path: str) -> Iterator[Tuple[Text, Text]]:
-	"""Generates (emoji, tweet) tuples from the lines in emoji and tweet files.
-	The two files have the same number of lines
+    """Generates (emoji, tweet) tuples from the lines in emoji and tweet files.
+    The two files have the same number of lines
     Emoji file contains one emoji per line and tweet file contains one tweet per line. 
     Each line in emoji file will have one emoji out of top 20 most common emoji for tweets in English,
     Here are some examples of emoji in emoji file, each number is related to its rank of being common:
