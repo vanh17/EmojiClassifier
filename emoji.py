@@ -114,7 +114,7 @@ class Classifier:
     def __init__(self):
         """Initalizes a logistic regression classifier.
         """
-        self.clfLR = LogisticRegression(random_state=0)
+        self.clfLR = LogisticRegression(random_state=0, multiclass='multinomial')
 
     def train(self, features: NDArray, labels: NDArray) -> None:
         """Trains the classifier using the given training examples.
