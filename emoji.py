@@ -33,8 +33,8 @@ def read_tweet(tweet_path: str, emoji_path: str) -> Iterator[Tuple[Text, Text]]:
     """
     tweets = open("dataset/us_test.text", encoding='utf8').readlines()
     emojis = open("dataset/us_test.labels", encoding='utf8').readlines()
-	for i in range(len(tweets)):
-		yield (emojis[i], tweets[i])
+    for i in range(len(tweets)):
+        yield (emojis[i], tweets[i])
 
 class TextToFeatures:
     def __init__(self, texts: Iterable[Text], tf_idf = 1):
