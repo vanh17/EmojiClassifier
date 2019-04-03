@@ -35,7 +35,7 @@ def test_prediction(capsys, min_f1=0.36):
     # get texts and labels from the development data 
     # The organizer provide the test set for development process called trial
     # to evaluate the whole system we need to submit the output_label_text file to their website
-    devel_examples = emoji.read_tweet("dataset/us_trial.text", "dataset/us_trial.labels")
+    devel_examples = emoji.read_tweet("dataset/us_test.text", "dataset/us_test.labels")
     devel_labels, devel_texts = zip(*devel_examples)
 
     # create the feature extractor and label encoder
