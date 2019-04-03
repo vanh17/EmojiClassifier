@@ -1,9 +1,15 @@
 import numpy as np
 import pytest
 from sklearn.metrics import f1_score, accuracy_score
+import io
 
 # import our classification class
 import emoji
+
+def to_file(result: np.ndarray, full_path_to_output_file: str):
+    with io.open(full_path_to_output_file, "w") as output:
+        for r in result:
+            output.write(str(r) + "\n")
 
 @pytest.fixture(autouse=True)
 def test_read_tweet():
@@ -58,6 +64,10 @@ def test_prediction(capsys, min_f1=0.36):
 
     # make sure that performance is adequate
     assert f1 > min_f1
+    #making the output file so that we can use that for the final testing
+    test_tweet = emoji.read_test_tweets("dataset/us_test.text")
+    predicted_indices_gold = classifier.predict(to_features(test_tweet))
+    to_file(predicted_indices_gold)
 
 @pytest.mark.xfail
 def test_very_accurate_prediction():

@@ -31,10 +31,15 @@ def read_tweet(tweet_path: str, emoji_path: str) -> Iterator[Tuple[Text, Text]]:
     :param emoji_path: The path of an emoji file, formatted as above.
     :return: An iterator over (emoji, tweet) tuples.
     """
-    tweets = open("dataset/us_test.text", encoding='utf8').readlines()
-    emojis = open("dataset/us_test.labels", encoding='utf8').readlines()
+    tweets = open(tweet_path, encoding='utf8').readlines()
+    emojis = open(emoji_path, encoding='utf8').readlines()
     for i in range(len(tweets)):
         yield (emojis[i], tweets[i])
+
+def read_test_tweets(tweet_path: str):
+    tweets = open(tweet_path, encoding='utf8').readlines()
+    for i in range(len(tweets)):
+        yield tweets[i]
 
 class TextToFeatures:
     def __init__(self, texts: Iterable[Text], tf_idf = 1):
