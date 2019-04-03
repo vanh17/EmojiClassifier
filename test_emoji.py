@@ -68,7 +68,3 @@ def test_prediction(capsys, min_f1=0.36):
     # test_tweet = emoji.read_test_tweets("dataset/us_test.text")
     # predicted_indices_gold = classifier.predict(to_features(test_tweet))
     # to_file(predicted_indices_gold)
-
-@pytest.mark.xfail
-def test_very_accurate_prediction():
-    test_prediction(capsys=None, min_f1=0.45)
