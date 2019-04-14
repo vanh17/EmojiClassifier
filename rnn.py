@@ -1,140 +1,73 @@
-import tensorflow as tf
+#Importing libraries
+import numpy as np 
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from keras.models import Sequential
+from keras.layers import Dense, Embedding, LSTM
+from sklearn.model_selection import train_test_split
+from keras.utils.np_utils import to_categorical
+import re
+import json
+import pandas as pd
 
-class rnn_clf(object):
-    """"
-    LSTM and Bi-LSTM classifiers for text classification
-    """
-    def __init__(self, config):
-        self.num_classes = config.num_classes
-        self.vocab_size = config.vocab_size
-        self.hidden_size = config.hidden_size
-        self.num_layers = config.num_layers
-        self.l2_reg_lambda = config.l2_reg_lambda
+##Coverting JSON to pandas dataframe
 
-        # Placeholders
-        self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
-        self.input_x = tf.placeholder(dtype=tf.int32, shape=[None, None], name='input_x')
-        self.input_y = tf.placeholder(dtype=tf.int64, shape=[None], name='input_y')
-        self.keep_prob = tf.placeholder(dtype=tf.float32, shape=[], name='keep_prob')
-        self.sequence_length = tf.placeholder(dtype=tf.int32, shape=[None], name='sequence_length')
+def convert(x):
+    ob = json.loads(x)
+    for k, v in ob.items():
+        if isinstance(v, list):
+            ob[k] = ','.join(v)
+        elif isinstance(v, dict):
+            for kk, vv in v.items():
+                ob['%s_%s' % (k, kk)] = vv
+            del ob[k]
+    return ob
+json_filename='review.json'
+with open(json_filename,'rb') as f:
+    data = f.readlines()
 
-        # L2 loss
-        self.l2_loss = tf.constant(0.0)
+#Converting into pandas dataframe and filtering only text and ratings given by the users
+df = pd.DataFrame([convert(line) for line in data])
+data = df[['text', 'stars']]
 
-        # Word embedding
-        with tf.device('/cpu:0'), tf.name_scope('embedding'):
-            embedding = tf.get_variable('embedding',
-                                        shape=[self.vocab_size, self.hidden_size],
-                                        dtype=tf.float32)
-            inputs = tf.nn.embedding_lookup(embedding, self.input_x)
+#I have considered a rating above 3 as positive and less than or equal to 3 as negative.
 
-        # Input dropout
-        self.inputs = tf.nn.dropout(inputs, keep_prob=self.keep_prob)
+data['sentiment']=['pos' if (x>3) else 'neg' for x in data['stars']]
+data['text'] = data['text'].apply(lambda x: x.lower())
+data['text'] = data['text'].apply((lambda x: re.sub('[^a-zA-z0-9\s]','',x)))
+for idx,row in data.iterrows():
+    row[0] = row[0].replace('rt',' ')
+data['text']= [x.encode('ascii') for x in data['text']]
 
-        # LSTM
-        if config.clf == 'lstm':
-            self.final_state = self.normal_lstm()
-        else:
-            self.final_state = self.bi_lstm()
+tokenizer = Tokenizer(nb_words = 2500, split=' ')
+tokenizer.fit_on_texts(data['text'].values)
+#print(tokenizer.word_index)  # To see the dicstionary
+X = tokenizer.texts_to_sequences(data['text'].values)
+X = pad_sequences(X)
 
-        # Softmax output layer
-        with tf.name_scope('softmax'):
-            # softmax_w = tf.get_variable('softmax_w', shape=[self.hidden_size, self.num_classes], dtype=tf.float32)
-            if config.clf == 'lstm':
-                softmax_w = tf.get_variable('softmax_w', shape=[self.hidden_size, self.num_classes], dtype=tf.float32)
-            else:
-                softmax_w = tf.get_variable('softmax_w', shape=[2 * self.hidden_size, self.num_classes], dtype=tf.float32)
-            softmax_b = tf.get_variable('softmax_b', shape=[self.num_classes], dtype=tf.float32)
+embed_dim = 128
+lstm_out = 300
+batch_size= 32
 
-            # L2 regularization for output layer
-            self.l2_loss += tf.nn.l2_loss(softmax_w)
-            self.l2_loss += tf.nn.l2_loss(softmax_b)
+##Buidling the LSTM network
 
-            # self.logits = tf.matmul(self.final_state[self.num_layers - 1].h, softmax_w) + softmax_b
-            if config.clf == 'lstm':
-                self.logits = tf.matmul(self.final_state[self.num_layers - 1].h, softmax_w) + softmax_b
-            else:
-                self.logits = tf.matmul(self.final_state, softmax_w) + softmax_b
-            predictions = tf.nn.softmax(self.logits)
-            self.predictions = tf.argmax(predictions, 1, name='predictions')
+model = Sequential()
+model.add(Embedding(2500, embed_dim,input_length = X.shape[1], dropout=0.1))
+model.add(LSTM(lstm_out, dropout_U=0.1, dropout_W=0.1))
+model.add(Dense(2,activation='softmax'))
+model.compile(loss = 'categorical_crossentropy', optimizer='adam',metrics = ['accuracy'])
 
-        # Loss
-        with tf.name_scope('loss'):
-            tvars = tf.trainable_variables()
+Y = pd.get_dummies(data['sentiment']).values
+X_train, X_valid, Y_train, Y_valid = train_test_split(X,Y, test_size = 0.20, random_state = 36)
 
-            # L2 regularization for LSTM weights
-            for tv in tvars:
-                if 'kernel' in tv.name:
-                    self.l2_loss += tf.nn.l2_loss(tv)
+#Here we train the Network.
 
-            losses = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.input_y,
-                                                                    logits=self.logits)
-            self.cost = tf.reduce_mean(losses) + self.l2_reg_lambda * self.l2_loss
+model.fit(X_train, Y_train, batch_size =batch_size, nb_epoch = 1,  verbose = 5)
 
-        # Accuracy
-        with tf.name_scope('accuracy'):
-            correct_predictions = tf.equal(self.predictions, self.input_y)
-            self.correct_num = tf.reduce_sum(tf.cast(correct_predictions, tf.float32))
-            self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32), name='accuracy')
+# Measuring score and accuracy on validation set
 
-    def normal_lstm(self):
-        # LSTM Cell
-        cell = tf.contrib.rnn.LSTMCell(self.hidden_size,
-                                       forget_bias=1.0,
-                                       state_is_tuple=True,
-                                       reuse=tf.get_variable_scope().reuse)
-        # Add dropout to cell output
-        cell = tf.contrib.rnn.DropoutWrapper(cell, output_keep_prob=self.keep_prob)
-
-        # Stacked LSTMs
-        cell = tf.contrib.rnn.MultiRNNCell([cell] * self.num_layers, state_is_tuple=True)
-
-        self._initial_state = cell.zero_state(self.batch_size, dtype=tf.float32)
-
-        # Dynamic LSTM
-        with tf.variable_scope('LSTM'):
-            outputs, state = tf.nn.dynamic_rnn(cell,
-                                               inputs=self.inputs,
-                                               initial_state=self._initial_state,
-                                               sequence_length=self.sequence_length)
-
-        final_state = state
-
-        return final_state
-
-
-    def bi_lstm(self):
-        cell_fw = tf.contrib.rnn.LSTMCell(self.hidden_size,
-                                          forget_bias=1.0,
-                                          state_is_tuple=True,
-                                          reuse=tf.get_variable_scope().reuse)
-        cell_bw = tf.contrib.rnn.LSTMCell(self.hidden_size,
-                                          forget_bias=1.0,
-                                          state_is_tuple=True,
-                                          reuse=tf.get_variable_scope().reuse)
-
-        # Add dropout to cell output
-        cell_fw = tf.contrib.rnn.DropoutWrapper(cell_fw, output_keep_prob=self.keep_prob)
-        cell_bw = tf.contrib.rnn.DropoutWrapper(cell_bw, output_keep_prob=self.keep_prob)
-
-        # Stacked LSTMs
-        cell_fw = tf.contrib.rnn.MultiRNNCell([cell_fw] * self.num_layers, state_is_tuple=True)
-        cell_bw = tf.contrib.rnn.MultiRNNCell([cell_bw] * self.num_layers, state_is_tuple=True)
-
-        self._initial_state_fw = cell_fw.zero_state(self.batch_size, dtype=tf.float32)
-        self._initial_state_bw = cell_bw.zero_state(self.batch_size, dtype=tf.float32)
-
-        # Dynamic Bi-LSTM
-        with tf.variable_scope('Bi-LSTM'):
-            _, state = tf.nn.bidirectional_dynamic_rnn(cell_fw,
-                                                       cell_bw,
-                                                       inputs=self.inputs,
-                                                       initial_state_fw=self._initial_state_fw,
-                                                       initial_state_bw=self._initial_state_bw,
-                                                       sequence_length=self.sequence_length)
-
-        state_fw = state[0]
-        state_bw = state[1]
-        output = tf.concat([state_fw[self.num_layers - 1].h, state_bw[self.num_layers - 1].h], 1)
-
-        return output
+score,acc = model.evaluate(X_valid, Y_valid, verbose = 2, batch_size = batch_size)
+print("Logloss score: %.2f" % (score))
+print("Validation set Accuracy: %.2f" % (acc))
