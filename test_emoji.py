@@ -45,6 +45,7 @@ def test_prediction_ngram(capsys, min_f1=0.36):
     f1 = f1_score(devel_indices, predicted_indices, average="macro")
     accuracy = accuracy_score(devel_indices, predicted_indices)
 
+    print("N-gram classifier results:")
     # print out performance
     if capsys is not None:
         with capsys.disabled():
@@ -68,31 +69,28 @@ def test_prediction_lstm(capsys, min_f1=0.36):
  #        emoji_code_gold = int(truth_file_lines[i].replace("\n",""))
  #        gold_keys[i] = emoji_code_gold
     # get texts and labels from the training data
-    train_examples = emoji.read_tweet("dataset/us_train.text", "dataset/us_train.labels")
+    train_examples = rnn.read_tweet("dataset/us_train.text", "dataset/us_train.labels")
     train_labels, train_texts = zip(*train_examples)
 
     # get texts and labels from the development data 
     # The organizer provide the test set for development process called trial
     # to evaluate the whole system we need to submit the output_label_text file to their website
-    devel_examples = emoji.read_tweet("dataset/us_test.text", "dataset/us_test.labels")
+    devel_examples = rnn.read_tweet("dataset/us_test.text", "dataset/us_test.labels")
     devel_labels, devel_texts = zip(*devel_examples)
 
-    # create the feature extractor and label encoder
-    to_features = emoji.TextToFeatures(train_texts)
-    to_labels = emoji.TextToLabels(train_labels)
-
     # train the classifier on the training data
-    classifier = emoji.Classifier()
-    classifier.train(to_features(train_texts), to_labels(train_labels))
+    classifier = rnn.RNN()
+    classifier.train(train_texts, train_labels)
 
     # make predictions on the development data
-    predicted_indices = classifier.predict(to_features(devel_texts))
+    predicted_indices = classifier.predict(devel_texts)
 
     # measure performance of predictions
-    devel_indices = to_labels(devel_labels)
+    devel_indices = devel_labels
     f1 = f1_score(devel_indices, predicted_indices, average="macro")
     accuracy = accuracy_score(devel_indices, predicted_indices)
 
+    print("LSTM classifier results:")
     # print out performance
     if capsys is not None:
         with capsys.disabled():
