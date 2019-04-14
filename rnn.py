@@ -29,7 +29,7 @@ class RNN:
         self.lstm_out = 300
         self.batch_size= 64
         #tokenizer to maximum word is 2500, cannot have more than this
-        self.tokenizer = Tokenizer(nb_words = 3500, split=' ')
+        self.tokenizer = Tokenizer(nb_words = 5000, split=' ')
         #initial the model with Sequenctial class from Keras
         self.model = Sequential()
         #initialize label encoder
@@ -60,7 +60,7 @@ class RNN:
         doc_feat_matrix = pad_sequences(doc_feat_matrix)
 
         ##Buidling the LSTM network
-        self.model.add(Embedding(2500, self.embed_dim,input_length = doc_feat_matrix.shape[1], dropout=0.1))
+        self.model.add(Embedding(5000, self.embed_dim,input_length = doc_feat_matrix.shape[1], dropout=0.1))
         self.model.add(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1))
         self.model.add(Dense(20,activation='softmax'))
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
