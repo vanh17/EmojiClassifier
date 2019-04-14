@@ -6,25 +6,48 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
 from keras.layers import Dense, Embedding, LSTM
 from keras.utils.np_utils import to_categorical
+from typing import Iterator, Iterable, Tuple, Text, Union
 
-#Converting into pandas dataframe and filtering only text and ratings given by the users
-#Will need to handle reading data here somehow
+#Since fit_to_texts only able to receive list of texts.
+#have to create new read_tweet function
+def read_tweet(tweet_path: str, emoji_path: str):
+    tweets = open(tweet_path, encoding='utf8').readlines()
+    emojis = open(emoji_path, encoding='utf8').readlines()
+    tweetList = []
+    emojiList = []
+    for i in range(len(tweets)):
+        tweetList.append(tweets[i])
+        emojiList.append(emojis[i])
+    return (emojiList, tweetList)
+#same for reading test tweets
+def read_test_tweets(tweet_path: str):
+    tweets = open(tweet_path, encoding='utf8').readlines()
+    return tweets
+    
+class RNN:
+    #Converting into pandas dataframe and filtering only text and ratings given by the users
+    #Will need to handle reading data here somehow
+    def __init__(self, train_texts: Iterator[Text], Iterator[Text]):
+        """Initalizes a logistic regression classifier.
+        """
+        #tokenizer to maximum word is 2500, cannot have more than this
+        self.tokenizer = Tokenizer(nb_words = 2500, split=' ')
+        #this will help us keep track of the words that is frequent
+        self.tokenizer.fit_on_texts(data['text'].values)
+        #print(tokenizer.word_index)  # To see the dicstionary
+        #this will give us the sequence of interger represent for those index create
+        #with the fit_on_texts
+        X = tokenizer.texts_to_sequences(data['text'].values)
+        #pad_sentence will simply make sure that all the representation has the same length
+        #of the longest sentence because not all the sentence have the same length
+        #without this this can mess up our embedding
+        X = pad_sequences(X)
+        
 
-#I have considered a rating above 3 as positive and less than or equal to 3 as negative.
-#Will need a code here to processing the data
+    def train(self, features: NDArray, labels: NDArray) -> None:
 
-#tokenizer to maximum word is 2500, cannot have more than this
-tokenizer = Tokenizer(nb_words = 2500, split=' ')
-#this will help us keep track of the words that is frequent
-tokenizer.fit_on_texts(data['text'].values)
-#print(tokenizer.word_index)  # To see the dicstionary
-#this will give us the sequence of interger represent for those index create
-#with the fit_on_texts
-X = tokenizer.texts_to_sequences(data['text'].values)
-#pad_sentence will simply make sure that all the representation has the same length
-#of the longest sentence because not all the sentence have the same length
-#without this this can mess up our embedding
-X = pad_sequences(X)
+
+    def predict(self, features: NDArray) -> NDArray:
 
 embed_dim = 128
 lstm_out = 300
