@@ -28,7 +28,7 @@ class RNN:
         self.lstm_out = 300
         self.batch_size= 64
         #tokenizer to maximum word is 2500, cannot have more than this
-        self.tokenizer = Tokenizer(nb_words = 2500, split=' ')
+        self.tokenizer = Tokenizer(nb_words = 3500, split=' ')
         #initial the model with Sequenctial class from Keras
         self.model = Sequential()
 
@@ -54,13 +54,5 @@ class RNN:
         self.model.fit(doc_feat_matrix, train_labels, batch_size = self.batch_size, nb_epoch = 10,  verbose = 2)
 
     def predict(self, test_texts: Sequence[Text]):
-
-
-
-
-
-# Measuring score and accuracy on validation set
-
-score,acc = model.evaluate(X_valid, Y_valid, verbose = 2, batch_size = batch_size)
-print("Logloss score: %.2f" % (score))
-print("Validation set Accuracy: %.2f" % (acc))
+        test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts))
+        return self.model.predict(test_feat_matrix, batch_size=64, verbose=1)
