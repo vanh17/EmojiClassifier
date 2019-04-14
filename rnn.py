@@ -16,8 +16,8 @@ def read_tweet(tweet_path: str, emoji_path: str) -> Tuple[Sequence[Text], Sequen
     tweetList = []
     emojiList = []
     for i in range(len(tweets)):
-        tweetList.append(tweets[i])
-        emojiList.append(emojis[i])
+        tweetList.append(tweets[i].replace("\n", ""))
+        emojiList.append(emojis[i].replace("\n", ""))
     return (emojiList, tweetList)
 
 class RNN:
