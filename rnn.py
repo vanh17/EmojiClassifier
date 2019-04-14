@@ -10,7 +10,7 @@ from typing import Iterator, Tuple, Text, Sequence
 
 #Since fit_to_texts only able to receive list of texts.
 #have to create new read_tweet function
-def read_tweet(tweet_path: str, emoji_path: str):
+def read_tweet(tweet_path: str, emoji_path: str) -> Tuple[Sequence[Text], Sequence[Text]]:
     tweets = open(tweet_path, encoding='utf8').readlines()
     emojis = open(emoji_path, encoding='utf8').readlines()
     tweetList = []
