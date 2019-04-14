@@ -11,16 +11,6 @@ def to_file(result: np.ndarray, full_path_to_output_file: str):
         for r in result:
             output.write(str(r) + "\n")
 
-@pytest.fixture(autouse=True)
-def test_read_tweet():
-    assert 0 == 0
-
-def test_features():
-    assert 0 == 0
-
-def test_labels():
-    assert 0 == 0
-
 def test_prediction(capsys, min_f1=0.36):
 	# truth_file_lines = open("dataset/us_test.labels", encoding='utf8').readlines()
 	# gold_keys = np.zeros(len(truth_file_lines), dtype=int)
