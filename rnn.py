@@ -51,8 +51,8 @@ class RNN:
         self.model.add(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1))
         self.model.add(Dense(20,activation='softmax'))
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
-        self.model.fit(doc_feat_matrix, train_labels, batch_size = self.batch_size, nb_epoch = 10,  verbose = 2)
+        self.model.fit(np.array(doc_feat_matrix), np.array(train_labels), batch_size = self.batch_size, nb_epoch = 10,  verbose = 2)
 
     def predict(self, test_texts: Sequence[Text]):
         test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts))
-        return self.model.predict(test_feat_matrix, batch_size=64, verbose=1)
+        return self.model.predict(np.array(test_feat_matrix), batch_size=64, verbose=1)
