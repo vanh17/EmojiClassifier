@@ -19,52 +19,45 @@ def read_tweet(tweet_path: str, emoji_path: str):
         tweetList.append(tweets[i])
         emojiList.append(emojis[i])
     return (emojiList, tweetList)
-#same for reading test tweets
-def read_test_tweets(tweet_path: str):
-    tweets = open(tweet_path, encoding='utf8').readlines()
-    return tweets
 
 class RNN:
     #Converting into pandas dataframe and filtering only text and ratings given by the users
     #Will need to handle reading data here somehow
-    def __init__(self, train_texts: Sequence[Text], Sequence[Text]):
+    def __init__(self):
+        self.embed_dim = 128
+        self.lstm_out = 300
+        self.batch_size= 64
         #tokenizer to maximum word is 2500, cannot have more than this
         self.tokenizer = Tokenizer(nb_words = 2500, split=' ')
+        #initial the model with Sequenctial class from Keras
+        self.model = Sequential()
+
+    def train(self, train_texts: Sequence[Text], train_labels: Sequence[Text]):
         #this will help us keep track of the words that is frequent
-        self.tokenizer.fit_on_texts(data['text'].values)
+        self.tokenizer.fit_on_texts(train_texts)
+
         #print(tokenizer.word_index)  # To see the dicstionary
         #this will give us the sequence of interger represent for those index create
         #with the fit_on_texts
-        X = tokenizer.texts_to_sequences(data['text'].values)
+        doc_feat_matrix = self.tokenizer.texts_to_sequences(train_texts)
+
         #pad_sentence will simply make sure that all the representation has the same length
         #of the longest sentence because not all the sentence have the same length
         #without this this can mess up our embedding
-        X = pad_sequences(X)
-        
+        doc_feat_matrix = pad_sequences(doc_feat_matrix)
 
-    def train(self, features: NDArray, labels: NDArray) -> None:
+        ##Buidling the LSTM network
+        self.model.add(Embedding(2500, self.embed_dim,input_length = doc_feat_matrix.shape[1], dropout=0.1))
+        self.model.add(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1))
+        self.model.add(Dense(20,activation='softmax'))
+        self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
+        self.model.fit(doc_feat_matrix, train_labels, batch_size = self.batch_size, nb_epoch = 10,  verbose = 2)
+
+    def predict(self, test_texts: Sequence[Text]):
 
 
-    def predict(self, features: NDArray) -> NDArray:
 
-embed_dim = 128
-lstm_out = 300
-batch_size= 32
 
-##Buidling the LSTM network
-
-model = Sequential()
-model.add(Embedding(2500, embed_dim,input_length = X.shape[1], dropout=0.1))
-model.add(LSTM(lstm_out, dropout_U=0.1, dropout_W=0.1))
-model.add(Dense(2,activation='softmax'))
-model.compile(loss = 'categorical_crossentropy', optimizer='adam',metrics = ['accuracy'])
-
-Y = pd.get_dummies(data['sentiment']).values
-X_train, X_valid, Y_train, Y_valid = train_test_split(X,Y, test_size = 0.20, random_state = 36)
-
-#Here we train the Network.
-
-model.fit(X_train, Y_train, batch_size =batch_size, nb_epoch = 1,  verbose = 5)
 
 # Measuring score and accuracy on validation set
 
