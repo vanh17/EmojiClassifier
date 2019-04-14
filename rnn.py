@@ -6,7 +6,7 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
 from keras.layers import Dense, Embedding, LSTM
 from keras.utils.np_utils import to_categorical
-from typing import Iterator, Iterable, Tuple, Text, Union
+from typing import Iterator, Tuple, Text, Sequence
 
 #Since fit_to_texts only able to receive list of texts.
 #have to create new read_tweet function
@@ -23,13 +23,11 @@ def read_tweet(tweet_path: str, emoji_path: str):
 def read_test_tweets(tweet_path: str):
     tweets = open(tweet_path, encoding='utf8').readlines()
     return tweets
-    
+
 class RNN:
     #Converting into pandas dataframe and filtering only text and ratings given by the users
     #Will need to handle reading data here somehow
-    def __init__(self, train_texts: Iterator[Text], Iterator[Text]):
-        """Initalizes a logistic regression classifier.
-        """
+    def __init__(self, train_texts: Sequence[Text], Sequence[Text]):
         #tokenizer to maximum word is 2500, cannot have more than this
         self.tokenizer = Tokenizer(nb_words = 2500, split=' ')
         #this will help us keep track of the words that is frequent
