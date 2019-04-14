@@ -7,6 +7,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Embedding, LSTM
 from keras.utils.np_utils import to_categorical
 from typing import Iterator, Tuple, Text, Sequence
+from sklearn import preprocessing
 
 #Since fit_to_texts only able to receive list of texts.
 #have to create new read_tweet function
@@ -31,10 +32,22 @@ class RNN:
         self.tokenizer = Tokenizer(nb_words = 3500, split=' ')
         #initial the model with Sequenctial class from Keras
         self.model = Sequential()
+        #initialize label encoder
+        self.lbEncoder = preprocessing.LabelEncoder()
+
+    def to_labels(self, labels: Sequence[Text]):
+        return self.lbEncoder.transform(labels)
+
+    def to_text(self, i):
+        return self.feature_names[i] 
 
     def train(self, train_texts: Sequence[Text], train_labels: Sequence[Text]):
         #this will help us keep track of the words that is frequent
         self.tokenizer.fit_on_texts(train_texts)
+        # assing the lbEncnder classes to the feature name
+        # so that we can access it in the index
+        self.lbEncoder.fit(train_labels)
+        self.feature_names = list(self.lbEncoder.classes_)
 
         #print(tokenizer.word_index)  # To see the dicstionary
         #this will give us the sequence of interger represent for those index create
@@ -51,7 +64,7 @@ class RNN:
         self.model.add(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1))
         self.model.add(Dense(20,activation='softmax'))
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
-        self.model.fit(np.array(doc_feat_matrix), np.array(train_labels), batch_size = self.batch_size, nb_epoch = 10,  verbose = 2)
+        self.model.fit(np.array(doc_feat_matrix), np.array(keras.utils.to_categorical(self.lbEncoder.transform(train_labels))), batch_size = self.batch_size, nb_epoch = 10,  verbose = 2)
 
     def predict(self, test_texts: Sequence[Text]):
         test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts))
