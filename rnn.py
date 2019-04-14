@@ -1,50 +1,29 @@
 #Importing libraries
-import numpy as np 
-import pandas as pd
+import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
 from keras.layers import Dense, Embedding, LSTM
-from sklearn.model_selection import train_test_split
 from keras.utils.np_utils import to_categorical
-import re
-import json
-import pandas as pd
-
-##Coverting JSON to pandas dataframe
-
-def convert(x):
-    ob = json.loads(x)
-    for k, v in ob.items():
-        if isinstance(v, list):
-            ob[k] = ','.join(v)
-        elif isinstance(v, dict):
-            for kk, vv in v.items():
-                ob['%s_%s' % (k, kk)] = vv
-            del ob[k]
-    return ob
-json_filename='review.json'
-with open(json_filename,'rb') as f:
-    data = f.readlines()
 
 #Converting into pandas dataframe and filtering only text and ratings given by the users
-df = pd.DataFrame([convert(line) for line in data])
-data = df[['text', 'stars']]
+#Will need to handle reading data here somehow
 
 #I have considered a rating above 3 as positive and less than or equal to 3 as negative.
+#Will need a code here to processing the data
 
-data['sentiment']=['pos' if (x>3) else 'neg' for x in data['stars']]
-data['text'] = data['text'].apply(lambda x: x.lower())
-data['text'] = data['text'].apply((lambda x: re.sub('[^a-zA-z0-9\s]','',x)))
-for idx,row in data.iterrows():
-    row[0] = row[0].replace('rt',' ')
-data['text']= [x.encode('ascii') for x in data['text']]
-
+#tokenizer to maximum word is 2500, cannot have more than this
 tokenizer = Tokenizer(nb_words = 2500, split=' ')
+#this will help us keep track of the words that is frequent
 tokenizer.fit_on_texts(data['text'].values)
 #print(tokenizer.word_index)  # To see the dicstionary
+#this will give us the sequence of interger represent for those index create
+#with the fit_on_texts
 X = tokenizer.texts_to_sequences(data['text'].values)
+#pad_sentence will simply make sure that all the representation has the same length
+#of the longest sentence because not all the sentence have the same length
+#without this this can mess up our embedding
 X = pad_sequences(X)
 
 embed_dim = 128
