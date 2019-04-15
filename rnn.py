@@ -72,11 +72,11 @@ class RNN:
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
 
         # do early stopping
-        es = EarlyStopping(monitor='val_acc', mode='max', min_delta=0.5)
+        es = EarlyStopping(monitor='acc', mode='max', min_delta=0.5)
 
         #save the best model
         filepath="models/best.hd5"
-        checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+        checkpoint = ModelCheckpoint(filepath, monitor='acc', verbose=1, save_best_only=True, mode='max')
         callbacks_list = [checkpoint, es]
 
         #start the training here
