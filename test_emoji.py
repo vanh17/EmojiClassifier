@@ -61,7 +61,7 @@ def to_file(result: np.ndarray, full_path_to_output_file: str):
 #     # predicted_indices_gold = classifier.predict(to_features(test_tweet))
 #     # to_file(predicted_indices_gold)
 
-train_labels, train_texts = rnn.read_tweet("dataset/us_trial.text", "dataset/us_trial.labels")
+train_labels, train_texts = rnn.read_tweet("dataset/us_train.text", "dataset/us_train.labels")
 classifier = rnn.RNN()
 classifier.train(train_texts, train_labels)
 
