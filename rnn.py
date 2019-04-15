@@ -9,6 +9,7 @@ from keras.layers import Dense, Embedding, LSTM
 from keras.utils import to_categorical
 from typing import Iterator, Tuple, Text, Sequence
 from sklearn import preprocessing
+from keras.models import model_from_json
 
 #Since fit_to_texts only able to receive list of texts.
 #have to create new read_tweet function
@@ -67,6 +68,23 @@ class RNN:
         self.model.add(Dense(20,activation='softmax'))
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
         self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, epochs = 10,  verbose = 2)
+
+    def save_model(self, path_to_folder: Text, fname: Text):
+        model_json = self.model.to_json()
+        with open(path_to_folder + "/" + fname + ".json", "w") as json_file:
+            json_file.write(model_json)
+        # serialize weights to HDF5
+        self.model.save_weights(path_to_folder + "/" + fname + ".h5")
+        print("Saved model from disk")
+
+    def load_model(self, path_to_folder: Text, fname: Text):
+        json_file = open(path_to_folder + "/" + fname + '.json', 'r')
+        loaded_model_json = json_file.read()
+        json_file.close()
+        self.model = model_from_json(loaded_model_json)
+        # load weights into new model
+        self.model.load_weights(path_to_folder + "/" + fname + ".h5")
+        print("Loaded model from disk")
 
     def predict(self, test_texts: Sequence[Text]):
         test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts), maxlen=self.maxlen)
