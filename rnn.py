@@ -1,6 +1,7 @@
 #Importing libraries
 import numpy as np
 import h5py
+import tensorflow
 from sklearn.feature_extraction.text import CountVectorizer
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
