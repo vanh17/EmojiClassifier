@@ -69,4 +69,4 @@ class RNN:
 
     def predict(self, test_texts: Sequence[Text]):
         test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts), maxlen=self.maxlen)
-        return self.model.predict(test_feat_matrix, batch_size=64, verbose=1)
+        return np.argmax(self.model.predict(test_feat_matrix, batch_size=64, verbose=1), axis=1)
