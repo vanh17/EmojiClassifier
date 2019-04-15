@@ -63,7 +63,7 @@ def to_file(result: np.ndarray, full_path_to_output_file: str):
 
 train_labels, train_texts = rnn.read_tweet("dataset/us_train.text", "dataset/us_train.labels")
 classifier = rnn.RNN()
-classifier.train(train_texts, train_labels)
+# classifier.train(train_texts, train_labels)
 
 def test_prediction_lstm_dev(capsys, min_f1=0.30):
     # truth_file_lines = open("dataset/us_test.labels", encoding='utf8').readlines()
