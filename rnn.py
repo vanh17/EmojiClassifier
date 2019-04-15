@@ -1,5 +1,6 @@
 #Importing libraries
 import numpy as np
+import h5py
 from sklearn.feature_extraction.text import CountVectorizer
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
@@ -65,7 +66,7 @@ class RNN:
         self.model.add(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1))
         self.model.add(Dense(20,activation='softmax'))
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
-        self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, nb_epoch = 10,  verbose = 2)
+        self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, epochs = 10,  verbose = 2)
 
     def predict(self, test_texts: Sequence[Text]):
         test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts), maxlen=self.maxlen)
