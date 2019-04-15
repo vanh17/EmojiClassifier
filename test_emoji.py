@@ -60,11 +60,11 @@ def to_file(result: np.ndarray, full_path_to_output_file: str):
 #     # test_tweet = emoji.read_test_tweets("dataset/us_test.text")
 #     # predicted_indices_gold = classifier.predict(to_features(test_tweet))
 #     # to_file(predicted_indices_gold)
+
 train_labels, train_texts = rnn.read_tweet("dataset/us_trial.text", "dataset/us_trial.labels")
 classifier = rnn.RNN()
 classifier.train(train_texts, train_labels)
-classifier.save_model("models", "lstm")
-classifier.load_model("models", "lstm")
+
 def test_prediction_lstm_dev(capsys, min_f1=0.33):
     # truth_file_lines = open("dataset/us_test.labels", encoding='utf8').readlines()
     # gold_keys = np.zeros(len(truth_file_lines), dtype=int)

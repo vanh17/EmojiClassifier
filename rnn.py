@@ -9,7 +9,7 @@ from keras.layers import Dense, Embedding, LSTM
 from keras.utils import to_categorical
 from typing import Iterator, Tuple, Text, Sequence
 from sklearn import preprocessing
-from keras.models import model_from_json
+from keras.models import load_model
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 #Since fit_to_texts only able to receive list of texts.
@@ -83,6 +83,6 @@ class RNN:
         self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, epochs = 10,  callbacks = callbacks_list, verbose = 0)
 
     def predict(self, test_texts: Sequence[Text]):
-        self.model.load_model("models/best.hd5")
+        self.model = load_model("models/best.hd5")
         test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts), maxlen=self.maxlen)
         return np.argmax(self.model.predict(test_feat_matrix, batch_size=64, verbose=1), axis=1)
