@@ -1,13 +1,12 @@
 #Importing libraries
 import numpy as np
 import h5py
-import tensorflow
 from sklearn.feature_extraction.text import CountVectorizer
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
 from keras.layers import Dense, Embedding, LSTM
-from keras.utils.np_utils import to_categorical
+from keras.utils import to_categorical
 from typing import Iterator, Tuple, Text, Sequence
 from sklearn import preprocessing
 from keras.models import model_from_json

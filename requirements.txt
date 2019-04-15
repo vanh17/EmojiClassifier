@@ -1,5 +1,5 @@
 numpy>=1.11
 scipy>=1.1
 scikit-learn>=0.20
-keras==1.1.1
+keras>=2.1.6
 tensorflow
