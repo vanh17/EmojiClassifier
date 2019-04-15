@@ -88,14 +88,13 @@ def test_prediction_lstm_dev(capsys, min_f1=0.30):
     f1 = f1_score(devel_indices, predicted_indices, average="macro")
     accuracy = accuracy_score(devel_indices, predicted_indices)
 
-    print("LSTM classifier dev results:")
     # print out performance
-    if capsys is not None:
-        with capsys.disabled():
-            msg = "\n{:.1%} macro-F1 on dataset development data"
-            print(msg.format(f1))
-            msg = "\n{:.1%} accuracy on dataset development data"
-            print(msg.format(accuracy))
+    print("LSTM classifier dev results:")
+    msg = "\n{:.1%} macro-F1 on dataset development data"
+    print(msg.format(f1))
+    msg = "\n{:.1%} accuracy on dataset development data"
+    print(msg.format(accuracy))
+            
 
     # make sure that performance is adequate
     assert f1 > min_f1
@@ -126,14 +125,12 @@ def test_prediction_lstm_test(capsys, min_f1=0.30):
     f1 = f1_score(devel_indices, predicted_indices, average="macro")
     accuracy = accuracy_score(devel_indices, predicted_indices)
 
-    print("LSTM classifier test results:")
     # print out performance
-    if capsys is not None:
-        with capsys.disabled():
-            msg = "\n{:.1%} macro-F1 on dataset development data"
-            print(msg.format(f1))
-            msg = "\n{:.1%} accuracy on dataset development data"
-            print(msg.format(accuracy))
+    print("LSTM classifier test results:")
+    msg = "\n{:.1%} macro-F1 on dataset development data"
+    print(msg.format(f1))
+    msg = "\n{:.1%} accuracy on dataset development data"
+    print(msg.format(accuracy))
 
     # make sure that performance is adequate
     assert f1 > min_f1
