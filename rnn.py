@@ -10,7 +10,7 @@ from keras.utils import to_categorical
 from typing import Iterator, Tuple, Text, Sequence
 from sklearn import preprocessing
 from keras.models import model_from_json
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 #Since fit_to_texts only able to receive list of texts.
 #have to create new read_tweet function
