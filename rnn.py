@@ -72,7 +72,7 @@ class RNN:
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
 
         # do early stopping
-        es = EarlyStopping(monitor='acc', mode='max', min_delta=0.5)
+        es = EarlyStopping(monitor='acc', mode='max', min_delta=0.0001)
 
         #save the best model
         filepath="models/best.hd5"

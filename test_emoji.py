@@ -65,7 +65,7 @@ train_labels, train_texts = rnn.read_tweet("dataset/us_train.text", "dataset/us_
 classifier = rnn.RNN()
 classifier.train(train_texts, train_labels)
 
-def test_prediction_lstm_dev(capsys, min_f1=0.33):
+def test_prediction_lstm_dev(capsys, min_f1=0.30):
     # truth_file_lines = open("dataset/us_test.labels", encoding='utf8').readlines()
     # gold_keys = np.zeros(len(truth_file_lines), dtype=int)
     # get texts and labels from the training data
@@ -104,7 +104,7 @@ def test_prediction_lstm_dev(capsys, min_f1=0.33):
     # predicted_indices_gold = classifier.predict(to_features(test_tweet))
     # to_file(predicted_indices_gold)
 
-def test_prediction_lstm_test(capsys, min_f1=0.35):
+def test_prediction_lstm_test(capsys, min_f1=0.30):
     # truth_file_lines = open("dataset/us_test.labels", encoding='utf8').readlines()
     # gold_keys = np.zeros(len(truth_file_lines), dtype=int)
     # get texts and labels from the training data
