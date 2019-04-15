@@ -11,6 +11,7 @@ from typing import Iterator, Tuple, Text, Sequence
 from sklearn import preprocessing
 from keras.models import model_from_json
 from keras.callbacks import ModelCheckpoint
+from keras.layers import SpatialDropout1D
 
 #Since fit_to_texts only able to receive list of texts.
 #have to create new read_tweet function
@@ -32,7 +33,7 @@ class RNN:
         self.lstm_out = 300
         self.batch_size= 64
         #tokenizer to maximum word is 2500, cannot have more than this
-        self.tokenizer = Tokenizer(nb_words = 2500, split=' ')
+        self.tokenizer = Tokenizer(nun_words = 2500, split=' ')
         #initial the model with Sequenctial class from Keras
         self.model = Sequential()
         #initialize label encoder
@@ -64,15 +65,20 @@ class RNN:
         self.maxlen = doc_feat_matrix.shape[1]
 
         ##Buidling the LSTM network
-        self.model.add(Embedding(2500, self.embed_dim,input_length = doc_feat_matrix.shape[1], dropout=0.1))
-        self.model.add(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1))
+        # Keras 2.0 does not support dropout anymore
+        # Add spatial dropout instead
+        self.model.add(keras.layers.SpatialDropout1D(0.1)(Embedding(2500, self.embed_dim,input_length = doc_feat_matrix.shape[1])))
+        self.model.add(LSTM(self.lstm_out, dropout=0.1, recurrent_dropout=0.1))
         self.model.add(Dense(20,activation='softmax'))
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
 
+        # do early stopping
+        es = EarlyStopping(monitor='val_acc', mode='max', min_delta=0.5)
+
         #save the best model
-        filepath="weights.best.hdf5"
+        filepath="models/weights.best.hdf5"
         checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-        callbacks_list = [checkpoint]
+        callbacks_list = [checkpoint, es]
 
         #start the training here
         self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, epochs = 10,  callbacks = callbacks_list, verbose = 0)
