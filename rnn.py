@@ -10,6 +10,7 @@ from keras.utils import to_categorical
 from typing import Iterator, Tuple, Text, Sequence
 from sklearn import preprocessing
 from keras.models import model_from_json
+from keras.callbacks import ModelCheckpoint
 
 #Since fit_to_texts only able to receive list of texts.
 #have to create new read_tweet function
@@ -67,14 +68,19 @@ class RNN:
         self.model.add(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1))
         self.model.add(Dense(20,activation='softmax'))
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
-        self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, epochs = 10,  verbose = 2)
+
+        #save the best model
+        filepath="weights.best.hdf5"
+        checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+        callbacks_list = [checkpoint]
+
+        #start the training here
+        self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, epochs = 10,  callbacks = callbacks_list, verbose = 0)
 
     def save_model(self, path_to_folder: Text, fname: Text):
         model_json = self.model.to_json()
         with open(path_to_folder + "/" + fname + ".json", "w") as json_file:
             json_file.write(model_json)
-        # serialize weights to HDF5
-        self.model.save_weights(path_to_folder + "/" + fname + ".h5")
         print("Saved model from disk")
 
     def load_model(self, path_to_folder: Text, fname: Text):
@@ -83,7 +89,7 @@ class RNN:
         json_file.close()
         self.model = model_from_json(loaded_model_json)
         # load weights into new model
-        self.model.load_weights(path_to_folder + "/" + fname + ".h5")
+        self.model.load_weights(path_to_folder + "/" + "weights.best.hdf5.h5")
         print("Loaded model from disk")
 
     def predict(self, test_texts: Sequence[Text]):
