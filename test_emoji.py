@@ -80,7 +80,7 @@ def test_prediction_lstm(capsys, min_f1=0.36):
     predicted_indices = classifier.predict(devel_texts)
 
     # measure performance of predictions
-    devel_indices = rnn.to_labels(devel_labels)
+    devel_indices = classifier.to_labels(devel_labels)
     f1 = f1_score(devel_indices, predicted_indices, average="macro")
     accuracy = accuracy_score(devel_indices, predicted_indices)
 
