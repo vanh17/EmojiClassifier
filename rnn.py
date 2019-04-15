@@ -75,28 +75,14 @@ class RNN:
         es = EarlyStopping(monitor='val_acc', mode='max', min_delta=0.5)
 
         #save the best model
-        filepath="models/weights.best.hdf5"
+        filepath="models/best.hd5"
         checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
         callbacks_list = [checkpoint, es]
 
         #start the training here
         self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, epochs = 10,  callbacks = callbacks_list, verbose = 0)
 
-    def save_model(self, path_to_folder: Text, fname: Text):
-        model_json = self.model.to_json()
-        with open(path_to_folder + "/" + fname + ".json", "w") as json_file:
-            json_file.write(model_json)
-        print("Saved model from disk")
-
-    def load_model(self, path_to_folder: Text, fname: Text):
-        json_file = open(path_to_folder + "/" + fname + '.json', 'r')
-        loaded_model_json = json_file.read()
-        json_file.close()
-        self.model = model_from_json(loaded_model_json)
-        # load weights into new model
-        self.model.load_weights(path_to_folder + "/" + "weights.best.hdf5.h5")
-        print("Loaded model from disk")
-
     def predict(self, test_texts: Sequence[Text]):
+        self.model.load_model("models/best.hd5")
         test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts), maxlen=self.maxlen)
         return np.argmax(self.model.predict(test_feat_matrix, batch_size=64, verbose=1), axis=1)
