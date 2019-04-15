@@ -65,7 +65,7 @@ def test_prediction_lstm(capsys, min_f1=0.36):
     # truth_file_lines = open("dataset/us_test.labels", encoding='utf8').readlines()
     # gold_keys = np.zeros(len(truth_file_lines), dtype=int)
     # get texts and labels from the training data
-    train_labels, train_texts = rnn.read_tweet("dataset/us_train.text", "dataset/us_train.labels")
+    train_labels, train_texts = rnn.read_tweet("dataset/us_trial.text", "dataset/us_trial.labels")
 
     # get texts and labels from the development data 
     # The organizer provide the test set for development process called trial

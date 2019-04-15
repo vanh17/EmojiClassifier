@@ -29,7 +29,7 @@ class RNN:
         self.lstm_out = 300
         self.batch_size= 64
         #tokenizer to maximum word is 2500, cannot have more than this
-        self.tokenizer = Tokenizer(nb_words = 5000, split=' ')
+        self.tokenizer = Tokenizer(nb_words = 2500, split=' ')
         #initial the model with Sequenctial class from Keras
         self.model = Sequential()
         #initialize label encoder
@@ -58,14 +58,15 @@ class RNN:
         #of the longest sentence because not all the sentence have the same length
         #without this this can mess up our embedding
         doc_feat_matrix = pad_sequences(doc_feat_matrix)
+        self.maxlen = doc_feat_matrix.shape[1]
 
         ##Buidling the LSTM network
-        self.model.add(Embedding(5000, self.embed_dim,input_length = doc_feat_matrix.shape[1], dropout=0.1))
+        self.model.add(Embedding(2500, self.embed_dim,input_length = doc_feat_matrix.shape[1], dropout=0.1))
         self.model.add(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1))
         self.model.add(Dense(20,activation='softmax'))
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
-        self.model.fit(np.array(doc_feat_matrix), np.array(to_categorical(self.lbEncoder.transform(train_labels))), batch_size = self.batch_size, nb_epoch = 10,  verbose = 2)
+        self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, nb_epoch = 10,  verbose = 2)
 
     def predict(self, test_texts: Sequence[Text]):
-        test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts))
-        return self.model.predict(np.array(test_feat_matrix), batch_size=64, verbose=1)
+        test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts), maxlen=self.maxlen)
+        return self.model.predict(test_feat_matrix, batch_size=64, verbose=1)
