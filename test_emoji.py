@@ -143,7 +143,7 @@ def to_file(result: np.ndarray, full_path_to_output_file: str):
 train_labels, train_texts = biLSTM.read_tweet("dataset/us_train.text", "dataset/us_train.labels")
 classifier = biLSTM.BILSTM()
 classifier.train(train_texts, train_labels)
-def test_prediction_bi_lstm_dev(capsys, min_f1=0.29.7):
+def test_prediction_bi_lstm_dev(capsys, min_f1=0.297):
     # truth_file_lines = open("dataset/us_test.labels", encoding='utf8').readlines()
     # gold_keys = np.zeros(len(truth_file_lines), dtype=int)
     # get texts and labels from the training data
@@ -179,7 +179,7 @@ def test_prediction_bi_lstm_dev(capsys, min_f1=0.29.7):
     # predicted_indices_gold = classifier.predict(to_features(test_tweet))
     # to_file(predicted_indices_gold)
 
-def test_prediction_bi_lstm_test(capsys, min_f1=0.29.3):
+def test_prediction_bi_lstm_test(capsys, min_f1=0.293):
     # truth_file_lines = open("dataset/us_test.labels", encoding='utf8').readlines()
     # gold_keys = np.zeros(len(truth_file_lines), dtype=int)
     # get texts and labels from the training data
