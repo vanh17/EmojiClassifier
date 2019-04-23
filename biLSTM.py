@@ -1,5 +1,4 @@
 #Importing libraries
-#Importing libraries
 import numpy as np
 import h5py
 from sklearn.feature_extraction.text import CountVectorizer
