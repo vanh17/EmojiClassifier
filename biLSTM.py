@@ -1,16 +1,12 @@
 #Importing libraries
+#Importing libraries
 import numpy as np
 import h5py
-from random import random
 from sklearn.feature_extraction.text import CountVectorizer
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
-from keras.callbacks import Callback
-from keras.layers import Dropout,Embedding,GlobalMaxPooling1D, MaxPooling1D, Add, Flatten
-from numpy import cumsum
-from keras.layers import GlobalAveragePooling1D, GlobalMaxPooling1D, concatenate, SpatialDropout1D
-from keras.layers import Dense, Embedding, LSTM, Bidirectional, TimeDistributed
+from keras.layers import Dense, Embedding, LSTM. Bidirectional
 from keras.utils import to_categorical
 from typing import Iterator, Tuple, Text, Sequence
 from sklearn import preprocessing
