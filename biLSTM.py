@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
-from keras.layers import Dense, Embedding, LSTM, Bidirectional, Flatten
+from keras.layers import Dense, Embedding, LSTM, Bidirectional, Flatten, GRU
 from keras.utils import to_categorical
 from typing import Iterator, Tuple, Text, Sequence
 from sklearn import preprocessing
@@ -65,7 +65,8 @@ class BILSTM:
         # # Keras 2.0 does not support dropout anymore
         # # Add spatial dropout instead
         self.model.add(Embedding(3500, self.embed_dim, input_length = doc_feat_matrix.shape[1], dropout=0.1))
-        self.model.add(Bidirectional(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1, return_sequences=True), merge_mode='concat'))
+        # self.model.add(Bidirectional(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1, return_sequences=True), merge_mode='concat'))
+        self.model.add(Bidirectional(GRU(self.lstm_out, activation='tanh', recurrent_activation='hard_sigmoid', dropout_U=0.1, dropout_W=0.1, return_sequences=True), merge_mode='concat'))
         self.model.add(Flatten())
         self.model.add(Dense(20,activation='softmax'))
         self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
