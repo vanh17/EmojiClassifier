@@ -6,6 +6,7 @@ import io
 # import our classification class
 import emoji
 import rnn
+import biLSTM
 
 def to_file(result: np.ndarray, full_path_to_output_file: str):
     with io.open(full_path_to_output_file, "w") as output:
