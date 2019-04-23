@@ -151,7 +151,7 @@ def test_prediction_bi_lstm_test(capsys, min_f1=0.28):
     # get texts and labels from the development data 
     # The organizer provide the test set for development process called trial
     # to evaluate the whole system we need to submit the output_label_text file to their website
-    devel_labels, devel_texts = rnn.read_tweet("dataset/us_test.text", "dataset/us_test.labels")
+    devel_labels, devel_texts = biLSTM.read_tweet("dataset/us_test.text", "dataset/us_test.labels")
 
     # train the classifier on the training data
     # classifier = rnn.RNN()
