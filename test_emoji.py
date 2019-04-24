@@ -175,9 +175,9 @@ def test_prediction_bi_lstm_dev(capsys, min_f1=0.319):
     # make sure that performance is adequate
     assert f1 > min_f1
     #making the output file so that we can use that for the final testing
-    # test_tweet = emoji.read_test_tweets("dataset/us_test.text")
-    # predicted_indices_gold = classifier.predict(to_features(test_tweet))
-    # to_file(predicted_indices_gold)
+    test_tweet = emoji.read_test_tweets("dataset/us_test.text")
+    predicted_indices_gold = classifier.predict(to_features(test_tweet))
+    to_file(predicted_indices_gold, "dev_results")
 
 def test_prediction_bi_lstm_test(capsys, min_f1=0.293):
     # truth_file_lines = open("dataset/us_test.labels", encoding='utf8').readlines()
@@ -211,6 +211,6 @@ def test_prediction_bi_lstm_test(capsys, min_f1=0.293):
     # make sure that performance is adequate
     assert f1 > min_f1
     #making the output file so that we can use that for the final testing
-    # test_tweet = emoji.read_test_tweets("dataset/us_test.text")
-    # predicted_indices_gold = classifier.predict(to_features(test_tweet))
-    # to_file(predicted_indices_gold)
+    test_tweet = emoji.read_test_tweets("dataset/us_test.text")
+    predicted_indices_gold = classifier.predict(to_features(test_tweet))
+    to_file(predicted_indices_gold, "test_results")
