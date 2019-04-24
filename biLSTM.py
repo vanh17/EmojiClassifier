@@ -84,7 +84,7 @@ class BILSTM:
         # self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, epochs = 10,  callbacks = callbacks_list, verbose = 0)
 
     def predict(self, test_texts: Sequence[Text]):
-        self.model = load_model("models/best_bi.hd5")
+        self.model = load_model("models/best_biLSTM.hd5")
         test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts), maxlen=self.maxlen)
         return np.argmax(self.model.predict(test_feat_matrix, batch_size=64, verbose=0), axis=1)
 
