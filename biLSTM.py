@@ -70,14 +70,14 @@ class BILSTM:
         self.model.add(Bidirectional(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1, return_sequences=True), merge_mode='ave'))
         self.model.add(Flatten())
         self.model.add(Dense(20,activation='softmax'))
-        self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
+        self.model.compile(loss = 'categorical_crossentropy', optimizer='rmsprop', metrics = ['accuracy'])
 
         # # # do early stopping
         es = EarlyStopping(monitor='acc', mode='max', min_delta=0.0001)
 
         # # #save the best model
         filepath="models/best_bi_lstm.hd5"
-        # checkpoint = ModelCheckpoint(filepath, monitor='acc', verbose=1, save_best_only=True, mode='max')
+        checkpoint = ModelCheckpoint(filepath, monitor='acc', verbose=1, save_best_only=True, mode='max')
         callbacks_list = [checkpoint, es]
 
         # # #start the training here
