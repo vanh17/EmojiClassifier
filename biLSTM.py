@@ -64,27 +64,27 @@ class BILSTM:
         # ##Buidling the LSTM network
         # # Keras 2.0 does not support dropout anymore
         # # Add spatial dropout instead
-        self.model.add(Embedding(3500, self.embed_dim, input_length = doc_feat_matrix.shape[1], dropout=0.1))
-        # self.model.add(Bidirectional(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1, return_sequences=True), merge_mode='concat'))
-        self.model.add(Bidirectional(GRU(self.lstm_out, activation='tanh', recurrent_activation='hard_sigmoid', dropout_U=0.1, dropout_W=0.1, return_sequences=True), merge_mode='ave'))
-        # self.model.add(Bidirectional(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1, return_sequences=True), merge_mode='ave'))
-        self.model.add(Flatten())
-        self.model.add(Dense(20,activation='softmax'))
-        self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
+        # self.model.add(Embedding(3500, self.embed_dim, input_length = doc_feat_matrix.shape[1], dropout=0.1))
+        # # self.model.add(Bidirectional(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1, return_sequences=True), merge_mode='concat'))
+        # self.model.add(Bidirectional(GRU(self.lstm_out, activation='tanh', recurrent_activation='hard_sigmoid', dropout_U=0.1, dropout_W=0.1, return_sequences=True), merge_mode='ave'))
+        # # self.model.add(Bidirectional(LSTM(self.lstm_out, dropout_U=0.1, dropout_W=0.1, return_sequences=True), merge_mode='ave'))
+        # self.model.add(Flatten())
+        # self.model.add(Dense(20,activation='softmax'))
+        # self.model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics = ['accuracy'])
 
-        # # do early stopping
-        es = EarlyStopping(monitor='acc', mode='max', min_delta=0.0001)
+        # # # do early stopping
+        # es = EarlyStopping(monitor='acc', mode='max', min_delta=0.0001)
 
-        # #save the best model
-        filepath="models/best_bi.hd5"
-        checkpoint = ModelCheckpoint(filepath, monitor='acc', verbose=1, save_best_only=True, mode='max')
-        callbacks_list = [checkpoint, es]
+        # # #save the best model
+        # filepath="models/best_bi.hd5"
+        # checkpoint = ModelCheckpoint(filepath, monitor='acc', verbose=1, save_best_only=True, mode='max')
+        # callbacks_list = [checkpoint, es]
 
-        # #start the training here
-        self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, epochs = 10,  callbacks = callbacks_list, verbose = 0)
+        # # #start the training here
+        # self.model.fit(doc_feat_matrix, to_categorical(self.lbEncoder.transform(train_labels)), batch_size = self.batch_size, epochs = 10,  callbacks = callbacks_list, verbose = 0)
 
     def predict(self, test_texts: Sequence[Text]):
         self.model = load_model("models/best_bi.hd5")
-        test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts), maxlen=3500)
+        test_feat_matrix = pad_sequences(self.tokenizer.texts_to_sequences(test_texts), maxlen=self.maxlen)
         return np.argmax(self.model.predict(test_feat_matrix, batch_size=64, verbose=0), axis=1)
 
